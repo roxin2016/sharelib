@@ -1,0 +1,76 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.8.1'
+    }
+}
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+}
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+}
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 7
+        versionName "1.1.1"
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    lintOptions {
+        abortOnError false
+        disable 'MissingTranslation'/*resolve BUILD APK when ocour  translationg error*/
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api 'com.android.support:appcompat-v7:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    api files('libs/alipaySdk-20160825.jar')
+    api files('libs/open_sdk_r5756_lite.jar')
+    api 'com.carozhu:RxHttpLibrary:1.8'
+    api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+}
+
+
+publish {
+    userOrg = 'luoxingxing'
+    groupId = 'com.luoxingxing'
+    artifactId = 'shareLib'
+    publishVersion = '1.1.1'
+    desc = 'share'
+    website = 'https://www.baidu.com/'
+}
+//./gradlew clean build bintrayUpload  -PbintrayUser=luoxingxing -PbintrayKey=a1a905e6316e697c13927e6a5eedc7774faffe71 -PdryRun=false

@@ -1,0 +1,69 @@
+1.导入
+compile 'com.luoxingxing:shareLib:1.0.4'
+2.初始化
+CommonManager.getInstance().init(this, Constant.WEIXIN_APP_ID, Constant.WEIXIN_SECRET, Constant.WEIXIN_PAY_ID, Constant.QQ_APP_ID);
+3.注册广播：登录、分享、支付、升级回调 //status:1:成功，0：失败，2：未安装微信,3未安装qq，4：未安装支付宝
+IntentFilter intentFilter = new IntentFilter();
+intentFilter.addAction(Constant.LOGIN_SUCCESS_BROADCAST_ACTION);
+intentFilter.addAction(Constant.SHARE_SUCCESS_BROADCAST_ACTION);
+intentFilter.addAction(Constant.PAY_SUCCESS_BROADCAST_ACTION);
+intentFilter.addAction(Constant.UPDATE_SUCCESS_BROADCAST_ACTION);
+registerReceiver(receiver, intentFilter);
+4.微信登录
+CommonManager.getInstance().wxLogin(getApplication(), Constant.LOGIN_URL);
+5.QQ登录
+Intent intent = new Intent(MainActivity.this, QQLoginActivity.class);
+intent.putExtra(Constant.LOGIN_URL_ACTION, Constant.LOGIN_URL);
+startActivity(intent);
+6.微信好友分享
+Bitmap thumb = BitmapFactory.decodeResource(MainActivity.this.getResources(),R.mipmap.ic_launcher);
+//参数：context，flag：0，分享到朋友，1，分享到朋友圈，title,标题，description:分享内容，url,分享点击跳转地址，bitmap,分享图标
+ShareUtil.share2weixin(MainActivity.this, 0, "标题", "描述", "http://vs.zsyj.com.cn/info/recharge/shape.php", thumb);
+7.微信朋友圈分享
+Bitmap thumb1 = BitmapFactory.decodeResource(MainActivity.this.getResources(),R.mipmap.ic_launcher);
+//参数：context，flag：0，分享到朋友，1，分享到朋友圈，title,标题，description:分享内容，url,分享点击跳转地址，bitmap,分享图标
+ShareUtil.share2weixin(MainActivity.this, 1, "标题", "描述", "http://vs.zsyj.com.cn/info/recharge/shape.php", thumb1);
+8.QQ好友分享
+//参数：context，title,标题，description:分享内容，url,分享点击跳转地址，shareIconUrl,应用图片在线地址，bitmap,分享图标,type：0，分享到朋友，1，分享到空间，
+ShareUtil.share2Qq(MainActivity.this, "标题", "描述", "http://vs.zsyj.com.cn/info/recharge/shape.php", "http://vs.zsyj.com.cn/info/recharge/images/head.png", 1);
+9.微信支付
+CommonManager.getInstance().wxPay("partnerid", "prepayid", "noncestr", "timestamp", "sign");
+10.支付宝支付
+CommonManager.getInstance().aliPay(MainActivity.this, "orderInfo");
+11.检测升级
+FileDownloader.init(this, "/Download/");
+CommonManager.getInstance().checkUpdate(MainActivity.this, Constant.CHECK_UPDATE_URL, Constant.PID, AppInfoHelper.getSid(getApplicationContext()), AppInfoHelper.getAppVersionString(getApplicationContext()), AppInfoHelper.getVersionCode(getApplicationContext()) + "");
+12.文件下载
+ FileDownloader.start(url, name, new DownloadListener() {
+            double progress = 0;
+            @Override
+            public void onStart(FileInfo fileInfo) {
+            }
+
+            @Override
+            public void onUpdate(FileInfo fileInfo) {
+                double loadBytes = fileInfo.getLoadBytes();
+                double totalBytes = fileInfo.getTotalBytes();
+                progress = (loadBytes / totalBytes) * 100;
+            }
+
+            @Override
+            public void onStop(FileInfo fileInfo) {
+            }
+
+            @Override
+            public void onComplete(FileInfo fileInfo) {
+
+            }
+
+            @Override
+            public void onCancel(FileInfo fileInfo) {
+            }
+
+            @Override
+            public void onError(FileInfo fileInfo, String errorMsg) {
+            }
+        }, true);
+ 13.apk安装
+ AppInfoHelper.installAPK(activity, apkPath);
+
